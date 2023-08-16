@@ -11,10 +11,8 @@ export default class CelestialBody extends Renderer {
     satellites = [];
     artificialSatellites = [];
     trajectory = [];
-    orbitSteps = 3600;
     distanceToSun = 0;
-    orbitRadiusX = 0;
-    orbitRadiusY = 0;
+    orbit = [];
     constructor(props) {
         const {
             id,
@@ -31,12 +29,7 @@ export default class CelestialBody extends Renderer {
             artificialSatellites,
             attachedTo,
             semiMajorAxis,    // Semieje mayor (a)
-            eccentricity,     // Excentricidad (e)
-            longitudeOfNode,  // Longitud del nodo ascendente (Ω)
-            argumentOfPeriapsis, // Argumento del perihelio (ω)
-            meanAnomaly,      // Anomalía media (M)
-            periapsis,        // Periapsis (P)
-            apoapsis          // Apoapsis (A)
+            eccentricity     // Excentricidad (e)
         } = props;
         super();
         this.id = id;
@@ -59,11 +52,6 @@ export default class CelestialBody extends Renderer {
         // Orbit Data
         this.semiMajorAxis = semiMajorAxis;
         this.eccentricity = eccentricity;
-        this.longitudeOfNode = longitudeOfNode;
-        this.argumentOfPeriapsis = argumentOfPeriapsis;
-        this.meanAnomaly = meanAnomaly;
-        this.periapsis = periapsis;
-        this.apoapsis = apoapsis;
 
         this.orbitParticles = [];
 
@@ -86,7 +74,6 @@ export default class CelestialBody extends Renderer {
 
         if (this.id !== 'SUN') {
             this.drawOrbit(ctx, camera);
-            this.drawQq(ctx, camera);
             this.drawTrajectory(ctx, camera);
         }
         this.drawName(ctx, camera);
@@ -106,15 +93,10 @@ export default class CelestialBody extends Renderer {
     }
 
     update() {
-        if (this.id === 'SUN') return;
-
-        this.updateOrbitParticles()
-
-        Physics.calculateTrajectory(this);
-
-        Physics.calculateOrbit(this);
-
-        Physics.applyGravity(
+        (this.id !== 'SUN') && this.updateOrbitParticles();
+        (this.id !== 'SUN') && Physics.calculateTrajectory(this);
+        (this.id !== 'SUN') && Physics.calculateOrbit(this);
+        (this.id !== 'SUN') && Physics.applyGravity(
             this,
             Physics.calculateStep(
                 this,
