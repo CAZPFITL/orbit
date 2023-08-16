@@ -29,7 +29,9 @@ export default class CelestialBody extends Renderer {
             artificialSatellites,
             attachedTo,
             semiMajorAxis,    // Semieje mayor (a)
-            eccentricity     // Excentricidad (e)
+            eccentricity,     // Excentricidad (e)
+            perihelion,
+            aphelion
         } = props;
         super();
         this.id = id;
@@ -52,7 +54,8 @@ export default class CelestialBody extends Renderer {
         // Orbit Data
         this.semiMajorAxis = semiMajorAxis;
         this.eccentricity = eccentricity;
-
+        this.perihelion = perihelion
+        this.aphelion = aphelion
         this.orbitParticles = [];
 
         this.satellites = satellites && Object.entries(satellites).map(([key, moon], index) =>

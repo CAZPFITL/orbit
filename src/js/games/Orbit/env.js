@@ -23,6 +23,8 @@ const CELESTIAL_BODIES = {
         y: 0, // km
         vx: 0, // km/s
         vy: 58.98, // km/s
+        perihelion: 46001009,
+        aphelion: 69817445,
         rotationalVelocity: 10.89, // km/h
     },
     VENUS: {
@@ -34,21 +36,23 @@ const CELESTIAL_BODIES = {
         x: 107476170, // km
         y: 0,
         vx: 0, // km/s
-        vy: 35.02, // km/s
+        vy: 35.22, // km/s
+        perihelion: 107476170,
+        aphelion: 108942780,
         rotationalVelocity: 6.52 // km/h
     },
-    PLUTO: {
-        mass: 1.309e22, // kg
-        density: 2095, // kg/m³
-        color: '#A8A8A8',
-        volume: 6.39e9, // km³
-        radius: 1188.3, // km
-        x: 5906.4e6, // km
-        y: 0,
-        vx: 0, // km/s
-        vy: 4.67, // km/s
-        rotationalVelocity: 4718 // km/h
-    }
+    // PLUTO: {
+    //     mass: 1.309e22, // kg
+    //     density: 2095, // kg/m³
+    //     color: '#A8A8A8',
+    //     volume: 6.39e9, // km³
+    //     radius: 1188.3, // km
+    //     x: 5906.4e6, // km
+    //     y: 0,
+    //     vx: 0, // km/s
+    //     vy: 4.67, // km/s
+    //     rotationalVelocity: 4718 // km/h
+    // }
 }
 
 // Llamada a la API HORIZONS para obtener datos de un cuerpo celeste

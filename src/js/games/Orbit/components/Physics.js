@@ -78,6 +78,7 @@ export default class Physics {
         entity.vy = data.vy;
         entity.x = data.x;
         entity.y = data.y;
+        entity.speed = data.speed;
         entity.distanceToSun = data.distanceToSun;
         entity.angle = (data.angle > 6.2) ? 0 : data.angle;
     }
@@ -91,6 +92,8 @@ export default class Physics {
             entity, {ax, ay}, dt
         )
 
+        let speed = Math.sqrt(vx * vx + vy * vy);
+
         let {x, y} = Physics.calculatePosition(
             entity, {vx, vy}, dt
         )
@@ -99,19 +102,13 @@ export default class Physics {
 
         let distanceToSun = Physics.calculateDistanceToSun(entity, particles[0])
 
-        return {ax, ay, vx, vy, x, y, angle, shineAngle, distanceToSun}
+        return {ax, ay, vx, vy, x, y, angle, shineAngle, distanceToSun, speed}
     }
 
     static calculateTrajectory(entity) {
         entity.trajectory = [];
-        let numOfSteps = 360;
-        const orbitalPeriod = Physics.calculateOrbitalPeriod(entity); // Calculate orbital period using Kepler's Third Law
 
-        const dt = orbitalPeriod / numOfSteps; // Calculate time step
-
-        console.log(dt)
-
-        for (let i = 0; i < numOfSteps; i++) {
+        for (let i = 0; i < 360; i++) {
             for (let j = 0; j < entity.orbitParticles.length; j++) {
 
                 const target = entity.orbitParticles[j];
@@ -119,7 +116,7 @@ export default class Physics {
                 const step = Physics.calculateStep(
                     target,
                     entity.orbitParticles,
-                    20000
+                    target.distanceToSun / 3000
                 );
 
                 if (target.id === entity.id) {
@@ -135,34 +132,7 @@ export default class Physics {
         }
     }
 
-    static calculateOrbitalPeriod(entity) {
-        // Assuming you have the required information for the orbit (semi-major axis and mass of the central body)
-        const semiMajorAxis = entity.semiMajorAxis; // The semi-major axis of the orbit
-        const centralBodyMass = entity.orbitParticles[0].mass; // Mass of the central body (e.g., Sun)
-
-        // Calculate the orbital period using Kepler's Third Law
-        const G = Physics.G_km; // Gravitational constant
-        const orbitalPeriod = 2 * Math.PI * Math.sqrt(Math.pow(semiMajorAxis, 3) / (G * centralBodyMass));
-
-        return orbitalPeriod;
-    }
-
     static calculateOrbit(entity) {
-        entity.perihelion = Number.MAX_VALUE;
-        entity.aphelion = Number.MIN_VALUE;
-        entity.orbit = []
-
-        for (let i = 0; i < entity.trajectory.length; i++) {
-            const target = entity.trajectory[i];
-
-            if (target.distanceToSun < entity.perihelion) {
-                entity.perihelion = target.distanceToSun;
-            }
-            if (target.distanceToSun > entity.aphelion) {
-                entity.aphelion = target.distanceToSun;
-            }
-        }
-
         entity.semiMajorAxis = (entity.perihelion + entity.aphelion) / 2;
         entity.eccentricity = (entity.aphelion - entity.perihelion) / (entity.aphelion + entity.perihelion);
 
