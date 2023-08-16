@@ -13,7 +13,7 @@ export default class Orbit {
         this._fetch = false;
         app.game = this;
         new Screen(app);
-        new GameLevel({app, dt: 1000})
+        new GameLevel({app, dt: 0.01})
     }
 
     prev() {

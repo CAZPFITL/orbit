@@ -104,29 +104,47 @@ export default class Physics {
 
     static calculateTrajectory(entity) {
         entity.trajectory = [];
+        let numOfSteps = 360;
+        const orbitalPeriod = Physics.calculateOrbitalPeriod(entity); // Calculate orbital period using Kepler's Third Law
 
-        for (let i = 0; i < 360; i++) {
+        const dt = orbitalPeriod / numOfSteps; // Calculate time step
+
+        console.log(dt)
+
+        for (let i = 0; i < numOfSteps; i++) {
             for (let j = 0; j < entity.orbitParticles.length; j++) {
 
                 const target = entity.orbitParticles[j];
 
                 const step = Physics.calculateStep(
-                    entity.orbitParticles[j],
+                    target,
                     entity.orbitParticles,
-                    entity.distanceToSun / 1000
-                );
-
-                // Apply to simulate
-                Physics.applyGravity(
-                    entity.orbitParticles[j],
-                    step
+                    20000
                 );
 
                 if (target.id === entity.id) {
                     entity.trajectory.push(step);
                 }
+
+                // Apply to simulate
+                Physics.applyGravity(
+                    target,
+                    step
+                );
             }
         }
+    }
+
+    static calculateOrbitalPeriod(entity) {
+        // Assuming you have the required information for the orbit (semi-major axis and mass of the central body)
+        const semiMajorAxis = entity.semiMajorAxis; // The semi-major axis of the orbit
+        const centralBodyMass = entity.orbitParticles[0].mass; // Mass of the central body (e.g., Sun)
+
+        // Calculate the orbital period using Kepler's Third Law
+        const G = Physics.G_km; // Gravitational constant
+        const orbitalPeriod = 2 * Math.PI * Math.sqrt(Math.pow(semiMajorAxis, 3) / (G * centralBodyMass));
+
+        return orbitalPeriod;
     }
 
     static calculateOrbit(entity) {
