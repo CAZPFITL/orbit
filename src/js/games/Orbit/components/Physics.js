@@ -110,12 +110,10 @@ export default class Physics {
 
                 const target = entity.orbitParticles[j];
 
-                const dt = entity.distanceToSun**(1.13/2);
-
                 const step = Physics.calculateStep(
                     entity.orbitParticles[j],
                     entity.orbitParticles,
-                    dt
+                    entity.distanceToSun / 1000
                 );
 
                 // Apply to simulate
