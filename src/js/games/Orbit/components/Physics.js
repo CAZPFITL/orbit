@@ -104,14 +104,25 @@ export default class Physics {
 
     static calculateTrajectory(entity) {
         entity.trajectory = [];
-        let numOfSteps = 360;
-        const orbitalPeriod = Physics.calculateOrbitalPeriod(entity); // Calculate orbital period using Kepler's Third Law
 
-        const dt = orbitalPeriod / numOfSteps; // Calculate time step
+        function isLapCompleted (trajectory) {
+            let cache = trajectory[0]
+            let output = false;
+            for (let i = 0; i < trajectory.length; i++) {
+                let step = trajectory[i];
+                if (cache.shineAngle > entity.app.tools.degToRad(350) && step.shineAngle < entity.app.tools.degToRad(350) ) {
+                    output = true;
+                    return output;
+                }
+                if (i % 2 === 0) {
+                    cache = step
+                }
+            }
 
-        console.log(dt)
+            return output;
+        }
 
-        for (let i = 0; i < numOfSteps; i++) {
+        function generateTrajectoryStep() {
             for (let j = 0; j < entity.orbitParticles.length; j++) {
 
                 const target = entity.orbitParticles[j];
@@ -119,7 +130,7 @@ export default class Physics {
                 const step = Physics.calculateStep(
                     target,
                     entity.orbitParticles,
-                    20000
+                    3600
                 );
 
                 if (target.id === entity.id) {
@@ -133,24 +144,19 @@ export default class Physics {
                 );
             }
         }
-    }
 
-    static calculateOrbitalPeriod(entity) {
-        // Assuming you have the required information for the orbit (semi-major axis and mass of the central body)
-        const semiMajorAxis = entity.semiMajorAxis; // The semi-major axis of the orbit
-        const centralBodyMass = entity.orbitParticles[0].mass; // Mass of the central body (e.g., Sun)
+        let complete = false
 
-        // Calculate the orbital period using Kepler's Third Law
-        const G = Physics.G_km; // Gravitational constant
-        const orbitalPeriod = 2 * Math.PI * Math.sqrt(Math.pow(semiMajorAxis, 3) / (G * centralBodyMass));
-
-        return orbitalPeriod;
+        do {
+            generateTrajectoryStep()
+            complete = isLapCompleted(entity.trajectory);
+        } while (complete === false);
     }
 
     static calculateOrbit(entity) {
+        entity.orbit = []
         entity.perihelion = Number.MAX_VALUE;
         entity.aphelion = Number.MIN_VALUE;
-        entity.orbit = []
 
         for (let i = 0; i < entity.trajectory.length; i++) {
             const target = entity.trajectory[i];
