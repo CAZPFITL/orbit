@@ -102,90 +102,113 @@ export default class Physics {
         return {ax, ay, vx, vy, x, y, angle, shineAngle, distanceToSun}
     }
 
+    static checkOrbitHalf(entity) {
+        if (entity.shineAngle > entity.app.tools.degToRad(180) && entity.orbitFirstHalf) {
+            entity.orbitFirstHalf = false;
+        }
+
+        if (entity.shineAngle < entity.app.tools.degToRad(180) && !entity.orbitFirstHalf) {
+            // TODO: add to log
+            console.log(entity.id, '`s orbit ',  entity.completedOrbits, ' completed');
+            entity.orbitFirstHalf = true;
+            entity.completedOrbits++;
+            entity.newOrbit();
+        }
+    }
+
     static calculateTrajectory(entity) {
         entity.trajectory = [];
 
-        function isLapCompleted (trajectory) {
-            let cache = trajectory[0]
-            let output = false;
-            for (let i = 0; i < trajectory.length; i++) {
-                let step = trajectory[i];
-                if (cache.shineAngle > entity.app.tools.degToRad(350) && step.shineAngle < entity.app.tools.degToRad(350) ) {
-                    output = true;
-                    return output;
-                }
-                if (i % 2 === 0) {
-                    cache = step
+        Physics.warp(entity, ()=>{
+            // TODO: add to log
+            console.log(entity.id, '`s orbit ',  entity.completedOrbits, ' started');
+            console.log('calculating trajectory ' + entity.id);
+
+            function generateTrajectoryStep() {
+                for (let j = 0; j < entity.orbitParticles.length; j++) {
+
+                    const target = entity.orbitParticles[j];
+
+                    const step = Physics.calculateStep(
+                        target,
+                        entity.orbitParticles,
+                        3600
+                    );
+
+                    // Apply to simulate
+                    Physics.applyGravity(
+                        target,
+                        step
+                    );
+
+                    if (target.id === entity.id) {
+                        entity.trajectory.push(step);
+                    }
+
                 }
             }
 
-            return output;
-        }
+            let complete = false;
 
-        function generateTrajectoryStep() {
-            for (let j = 0; j < entity.orbitParticles.length; j++) {
+            do {
+                generateTrajectoryStep()
+                complete = entity.trajectory.some(step =>
+                    step.shineAngle >= entity.app.tools.degToRad(190)
+                )
+            } while (complete === false);
 
-                const target = entity.orbitParticles[j];
-
-                const step = Physics.calculateStep(
-                    target,
-                    entity.orbitParticles,
-                    3600
-                );
-
-                if (target.id === entity.id) {
-                    entity.trajectory.push(step);
-                }
-
-                // Apply to simulate
-                Physics.applyGravity(
-                    target,
-                    step
-                );
-            }
-        }
-
-        let complete = false
-
-        do {
-            generateTrajectoryStep()
-            complete = isLapCompleted(entity.trajectory);
-        } while (complete === false);
+            entity.calculating = false;
+        })
     }
 
     static calculateOrbit(entity) {
-        entity.orbit = []
-        entity.perihelion = Number.MAX_VALUE;
-        entity.aphelion = Number.MIN_VALUE;
+        entity.orbit = [];
 
-        for (let i = 0; i < entity.trajectory.length; i++) {
-            const target = entity.trajectory[i];
+        Physics.warp(entity, ()=>{
+            // TODO: add to log
+            console.log('calculating orbit ' + entity.id);
 
-            if (target.distanceToSun < entity.perihelion) {
-                entity.perihelion = target.distanceToSun;
+            entity.perihelion = Number.MAX_VALUE;
+            entity.aphelion = Number.MIN_VALUE;
+
+            for (let i = 0; i < entity.trajectory.length; i++) {
+                const target = entity.trajectory[i];
+
+                if (target.distanceToSun < entity.perihelion) {
+                    entity.perihelion = target.distanceToSun;
+                }
+                if (target.distanceToSun > entity.aphelion) {
+                    entity.aphelion = target.distanceToSun;
+                }
             }
-            if (target.distanceToSun > entity.aphelion) {
-                entity.aphelion = target.distanceToSun;
+
+            entity.semiMajorAxis = (entity.perihelion + entity.aphelion) / 2;
+            entity.eccentricity = (entity.aphelion - entity.perihelion) / (entity.aphelion + entity.perihelion);
+
+            const ref = entity.attachedTo ?? entity.orbitParticles[0];
+
+            for (let angle = 0; angle <= 360; angle++) {
+                const trueAnomaly = angle * (Math.PI / 180);
+
+                const distance = (entity.semiMajorAxis * (1 - Math.pow(entity.eccentricity, 2))) / (1 + entity.eccentricity * Math.cos(trueAnomaly));
+
+                const xOrbit = distance * Math.cos(trueAnomaly);
+                const yOrbit = distance * Math.sin(trueAnomaly);
+
+                const xScreen = ref.x + xOrbit;
+                const yScreen = ref.y - yOrbit;
+
+                entity.orbit.push({xScreen, yScreen});
             }
-        }
 
-        entity.semiMajorAxis = (entity.perihelion + entity.aphelion) / 2;
-        entity.eccentricity = (entity.aphelion - entity.perihelion) / (entity.aphelion + entity.perihelion);
+            entity.calculating = false;
+        })
+    }
 
-        const ref = entity.attachedTo ?? entity.orbitParticles[0];
-
-        for (let angle = 0; angle <= 360; angle++) {
-            const trueAnomaly = angle * (Math.PI / 180);
-
-            const distance = (entity.semiMajorAxis * (1 - Math.pow(entity.eccentricity, 2))) / (1 + entity.eccentricity * Math.cos(trueAnomaly));
-
-            const xOrbit = distance * Math.cos(trueAnomaly);
-            const yOrbit = distance * Math.sin(trueAnomaly);
-
-            const xScreen = ref.x + xOrbit;
-            const yScreen = ref.y - yOrbit;
-
-            entity.orbit.push({xScreen, yScreen});
-        }
+    static warp(entity, callback) {
+        let cache = entity.app.game.level.dt
+        entity.app.game.level.dt = 6000
+        callback()
+        entity.app.game.level.dt = cache;
     }
 }

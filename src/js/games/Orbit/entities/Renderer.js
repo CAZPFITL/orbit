@@ -92,7 +92,7 @@ export default class Renderer {
         this.trajectory && this.app.gui.get.path({
             ctx,
             collection: this.trajectory,
-            color: 'rgba(255,0,255,0.59)',
+            color: 'rgba(153,255,0,0.39)',
             width: camera.zoom / 1000,
             lineCap: 'round',
             scale: 1

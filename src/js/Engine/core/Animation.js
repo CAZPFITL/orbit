@@ -12,7 +12,6 @@ export default class Animation {
     }
 
     loop = () => {
-        console.log(this.request)
         this.app.gui.camera.begin();
         this.app.looper.forEach(({update}) => update && update(this.request))
         this.app.gui.camera.end();

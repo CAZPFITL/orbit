@@ -12,7 +12,18 @@ export default class CelestialBody extends Renderer {
     artificialSatellites = [];
     trajectory = [];
     distanceToSun = 0;
+
+    // Orbit
+    aphelion;
+    perihelion;
+    eccentricity;
+    semiMajorAxis;
     orbit = [];
+    orbitParticles = [];
+    completedOrbits = 0;
+    orbitFirstHalf = true;
+
+    flip = false;
     constructor(props) {
         const {
             id,
@@ -28,10 +39,6 @@ export default class CelestialBody extends Renderer {
             satellites,
             artificialSatellites,
             attachedTo,
-            semiMajorAxis,    // Semieje mayor (a)
-            eccentricity,     // Excentricidad (e)
-            perihelion,
-            aphelion
         } = props;
         super();
         this.id = id;
@@ -50,14 +57,6 @@ export default class CelestialBody extends Renderer {
         this.radius = radius; // Km
         this.rotationalVelocity = rotationalVelocity / 3600;
         this.attachedTo = attachedTo
-
-        // Orbit Data
-        this.semiMajorAxis = semiMajorAxis;
-        this.eccentricity = eccentricity;
-        this.perihelion = perihelion
-        this.aphelion = aphelion
-        this.orbitParticles = [];
-
         this.satellites = satellites && Object.entries(satellites).map(([key, moon], index) =>
             new CelestialBody({
                 app, id: key, attachedTo: this, index: this.index + (index + 1), ...moon
@@ -68,7 +67,7 @@ export default class CelestialBody extends Renderer {
                 new CelestialBody({
                     app, id: key, attachedTo: this, ...moon
                 })
-            )
+            );
 
         return this
     }
@@ -95,10 +94,16 @@ export default class CelestialBody extends Renderer {
         }
     }
 
-    update() {
+    newOrbit() {
+        this.start = true;
         (this.id !== 'SUN') && this.updateOrbitParticles();
         (this.id !== 'SUN') && Physics.calculateTrajectory(this);
         (this.id !== 'SUN') && Physics.calculateOrbit(this);
+    }
+
+    update() {
+        (!this.start) && this.newOrbit();
+        (this.id !== 'SUN') && Physics.checkOrbitHalf(this);
         (this.id !== 'SUN') && Physics.applyGravity(
             this,
             Physics.calculateStep(

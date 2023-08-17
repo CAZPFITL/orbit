@@ -37,6 +37,30 @@ const CELESTIAL_BODIES = {
     //     vy: 35.02, // km/s
     //     rotationalVelocity: 6.52 // km/h
     // },
+    // EARTH: {
+    //     mass: 5.972e24, // kg
+    //     density: 5515, // kg/m³
+    //     color: '#2B70B0',
+    //     volume: 1.08321e12, // km³
+    //     radius: 6371, // km
+    //     x: 149598262, // km
+    //     y: 0,
+    //     vx: 0, // km/s
+    //     vy: 29.78, // km/s
+    //     rotationalVelocity: 1674.4 // km/h
+    // },
+    // JUPITER: {
+    //     mass: 1.898e27, // kg
+    //     density: 1326, // kg/m³
+    //     color: '#D4B87C',
+    //     volume: 1.43128e15, // km³
+    //     radius: 69911, // km
+    //     x: 778369000, // km
+    //     y: 0,
+    //     vx: 0, // km/s
+    //     vy: 13.06, // km/s
+    //     rotationalVelocity: 45.98 // km/h
+    // },
     // PLUTO: {
     //     mass: 1.309e22, // kg
     //     density: 2095, // kg/m³
