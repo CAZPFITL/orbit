@@ -125,7 +125,7 @@ export default class CelestialBody extends Renderer {
 
         Physics.applyGravity(
             this,
-            Physics.calculateEulerStep(
+            Physics.calculateStep(
                 this,
                 this.app.game.level.particles,
                 this.app.game.level.dt

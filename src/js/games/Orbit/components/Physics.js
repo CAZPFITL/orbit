@@ -19,7 +19,7 @@ export default class Physics extends Step {
 
                     const target = entity.orbitParticles[j];
 
-                    const step = Physics.calculateEulerStep(
+                    const step = Physics.calculateStep(
                         target,
                         entity.orbitParticles,
                         3600

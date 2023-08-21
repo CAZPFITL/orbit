@@ -1,3 +1,4 @@
+// https://www.youtube.com/watch?v=-GWTDhOQU6M
 import Physics from "./Physics.js";
 
 export class Step {
@@ -67,8 +68,8 @@ export class Step {
         }
     }
 
-    // Semi-implicit
-    static calculateEulerStep(entity, particles, dt) {
+    // Semi-implicit Euler Integration
+    static calculateEulerVP(entity, particles, dt) {
         let {ax, ay} = Physics.calculateAcceleration(
             entity, particles
         )
@@ -81,12 +82,46 @@ export class Step {
             entity, {vx, vy}, dt
         )
 
+        // TODO: fix this
+        // let { prev_x, prev_y } = {prev_x: 0, prev_y: 0};
+
+        return {ax, ay, vx, vy, x, y}
+    }
+
+    static calculateVerletAVP(entity, particles, dt) {
+        let vx = entity.x - entity.prev_x;
+        let vy = entity.y - entity.prev_y;
+
+         let {ax, ay} = Physics.calculateAcceleration(
+            entity, particles
+        );
+
+        let x = 2 * entity.x - entity.prev_x + ax * dt * dt;
+        let y = 2 * entity.y - entity.prev_y + ay * dt * dt;
+
+        let prev_x = entity.x;
+        let prev_y = entity.y;
+
+        return {ax, ay, vx, vy, x, y, prev_x, prev_y};
+    }
+
+    static calculateStep(entity, particles, dt) {
+        let { vx, vy, x, y, ax, ay, prev_x, prev_y} = Physics.calculateEulerVP(
+            entity, particles, dt
+        )
+
+        // let {ax, ay, vx, vy, x, y, prev_x, prev_y} = Physics.calculateVerletAVP(
+        //     entity, particles, dt
+        // )
+
         let {angle, shineAngle} = Physics.calculateAngle(entity, particles[0], dt)
 
         let distanceToSun = Physics.calculateDistanceToSun(entity, particles[0])
 
-        return {ax, ay, vx, vy, x, y, angle, shineAngle, distanceToSun}
+        return {ax, ay, vx, vy, x, y, angle, shineAngle, distanceToSun, prev_x, prev_y}
     }
+
+    // TODO More precision
 
     static applyGravity(entity, data) {
         entity.ax = data.ax;
@@ -97,5 +132,7 @@ export class Step {
         entity.y = data.y;
         entity.distanceToSun = data.distanceToSun;
         entity.angle = (data.angle > 6.2) ? 0 : data.angle;
+        entity.prev_x = data?.prev_x
+        entity.prev_y = data?.prev_y
     }
 }
