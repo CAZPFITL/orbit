@@ -67,7 +67,8 @@ export class Step {
         }
     }
 
-    static calculateStep(entity, particles, dt) {
+    // Semi-implicit
+    static calculateEulerStep(entity, particles, dt) {
         let {ax, ay} = Physics.calculateAcceleration(
             entity, particles
         )

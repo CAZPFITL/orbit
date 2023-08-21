@@ -32,8 +32,8 @@ export default class CelestialBody extends Renderer {
             color = '#FFFFFF',
             x, y, vx, vy,
             mass,
-            density,
-            volume,
+            // density,
+            // volume,
             radius,
             rotationalVelocity,
             satellites,
@@ -52,8 +52,8 @@ export default class CelestialBody extends Renderer {
         this.vx = vx; // km/s
         this.vy = vy; // km/s
         this.mass = mass; // kg
-        this.density = density; // kg/m³
-        this.volume = volume; // km³
+        // this.density = density; // kg/m³
+        // this.volume = volume; // km³
         this.radius = radius; // Km
         this.rotationalVelocity = rotationalVelocity / 3600;
         this.attachedTo = attachedTo
@@ -125,7 +125,7 @@ export default class CelestialBody extends Renderer {
 
         Physics.applyGravity(
             this,
-            Physics.calculateStep(
+            Physics.calculateEulerStep(
                 this,
                 this.app.game.level.particles,
                 this.app.game.level.dt
