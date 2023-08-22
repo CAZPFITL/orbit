@@ -8,6 +8,7 @@ export default class Physics extends Step {
 
     static calculateTrajectory(entity) {
         entity.trajectory = [];
+        let ref
 
         Physics.warp(entity, ()=>{
             // TODO: add to log
@@ -24,6 +25,10 @@ export default class Physics extends Step {
                         entity.orbitParticles,
                         3600
                     );
+
+                    if (!ref) {
+                        ref = step
+                    }
 
                     // Apply to simulate
                     Physics.applyGravity(
@@ -85,7 +90,7 @@ export default class Physics extends Step {
                 const xOrbit = distance * Math.cos(trueAnomaly);
                 const yOrbit = distance * Math.sin(trueAnomaly);
 
-                const xScreen = ref.x + xOrbit;
+                const xScreen = ref.x - xOrbit;
                 const yScreen = ref.y - yOrbit;
 
                 entity.orbit.push({xScreen, yScreen});

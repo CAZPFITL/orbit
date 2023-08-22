@@ -117,7 +117,7 @@ export default class CelestialBody extends Renderer {
     }
 
     update() {
-        if (this.id == 'SUN') return;
+        if (this.id === 'SUN') return;
 
         (!this.start) && this.newOrbit();
 

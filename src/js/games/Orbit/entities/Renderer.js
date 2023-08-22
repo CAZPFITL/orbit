@@ -104,7 +104,7 @@ export default class Renderer {
         ctx.beginPath();
         ctx.fillStyle = 'rgba(0,226,255,0.7)';
         ctx.strokeStyle = 'rgba(0,226,255,0.7)';
-        ctx.lineWidth = camera.zoom / 2000;
+        ctx.lineWidth = camera.zoom / 1000;
 
         for (let i = 0; i < this.orbit.length; i++) {
             const step = this.orbit[i]
