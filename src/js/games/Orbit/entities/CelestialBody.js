@@ -105,17 +105,16 @@ export default class CelestialBody extends Renderer {
         if (this.shineAngle > this.app.tools.degToRad(180) && this.orbitFirstHalf) {
             this.orbitFirstHalf = false;
             this.newOrbit();
-
         }
+
         if (this.shineAngle < this.app.tools.degToRad(180) && !this.orbitFirstHalf) {
-            // TODO: add to log
-            console.log(this.id, '`s orbit ',  this.completedOrbits, ' completed');
             this.orbitFirstHalf = true;
             this.completedOrbits++;
             this.newOrbit();
         }
     }
 
+    // console.log(this.id, '`s orbit ',  this.completedOrbits, ' completed'); // TODO: add to log
     update() {
         if (this.id === 'SUN') return;
 

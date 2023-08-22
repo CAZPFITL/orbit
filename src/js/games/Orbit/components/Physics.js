@@ -27,7 +27,7 @@ export default class Physics extends Step {
                     );
 
                     if (!ref) {
-                        ref = step
+                        ref = step;
                     }
 
                     // Apply to simulate
@@ -39,17 +39,18 @@ export default class Physics extends Step {
                     if (target.id === entity.id) {
                         entity.trajectory.push(step);
                     }
-
                 }
             }
 
             let complete = false;
 
             do {
-                generateTrajectoryStep()
+                generateTrajectoryStep();
                 complete = entity.trajectory.some(step =>
-                    step.shineAngle >= entity.app.tools.degToRad(180)
-                )
+                    step.shineAngle >= entity.app.tools.degToRad(180) && entity.orbitFirstHalf ||
+                    step.shineAngle <= entity.app.tools.degToRad(180) && !entity.orbitFirstHalf
+                );
+
             } while (complete === false);
 
             entity.calculating = false;
@@ -66,9 +67,11 @@ export default class Physics extends Step {
             entity.perihelion = Number.MAX_VALUE;
             entity.aphelion = Number.MIN_VALUE;
 
+            // TODO: dont save any trajectory, just calculate q & Q
             for (let i = 0; i < entity.trajectory.length; i++) {
                 const target = entity.trajectory[i];
 
+                /// TODO add position to q & Q to make a more precise orbit
                 if (target.distanceToSun < entity.perihelion) {
                     entity.perihelion = target.distanceToSun;
                 }
@@ -102,7 +105,7 @@ export default class Physics extends Step {
 
     static warp(entity, callback) {
         let cache = entity.app.game.level.dt
-        entity.app.game.level.dt = 6000
+        entity.app.game.level.dt = 100
         callback()
         entity.app.game.level.dt = cache;
     }
