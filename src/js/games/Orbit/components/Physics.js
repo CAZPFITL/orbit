@@ -53,7 +53,6 @@ export default class Physics extends Step {
                     step.shineAngle >= entity.app.tools.degToRad(180) && entity.orbitFirstHalf ||
                     step.shineAngle <= entity.app.tools.degToRad(180) && !entity.orbitFirstHalf
                 );
-
             } while (complete === false);
 
             entity.calculating = false;
