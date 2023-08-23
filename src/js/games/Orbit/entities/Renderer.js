@@ -1,6 +1,7 @@
 import Physics from "../components/Physics.js";
+import Orbit from "./Orbit.js";
 
-export default class Renderer {
+export default class Renderer extends Orbit {
     id;
     x;
     y;
@@ -19,6 +20,7 @@ export default class Renderer {
     orbit;
 
     constructor(){
+        super();
         this.img = new Image();
         this.shadow = new Image();
         this.img.src = './src/js/games/Orbit/assets/planets4.png';
@@ -118,6 +120,16 @@ export default class Renderer {
         ctx.closePath();
         ctx.stroke();
         ctx.restore();
+    }
 
+    draw(ctx = this.app.gui.ctx, camera = this.app.gui.camera) {
+        // if (this.id !== 'SUN') {
+            this.drawOrbit(ctx, camera);
+        //     this.drawTrajectory(ctx, camera);
+        // }
+        this.drawName(ctx, camera);
+        this.drawImage(ctx);
+        // (this.id !== 'SUN') && this.drawShadow(ctx);
+        // (!this.index) && this.drawSatellite(ctx);
     }
 }

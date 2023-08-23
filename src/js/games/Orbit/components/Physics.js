@@ -2,6 +2,8 @@
 import {Step} from "./Step.js";
 
 export default class Physics extends Step {
+    static integrator = 'verlet';
+    static integrators = ['euler', 'verlet'];
     static G_km = 6.67430e-20; // km³/(kg·s²)
     static universalRadiusScale = 1;
     static universalDistanceScale = 1;
@@ -23,7 +25,8 @@ export default class Physics extends Step {
                     const step = Physics.calculateStep(
                         target,
                         entity.orbitParticles,
-                        3600
+                        3600,
+                        Physics.integrator
                     );
 
                     if (!ref) {

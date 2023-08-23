@@ -68,8 +68,8 @@ export class Step {
         }
     }
 
-    // Semi-implicit Euler Integration
-    static calculateEulerVP(entity, particles, dt) {
+    static euler(entity, particles, dt) {
+        // Semi-implicit Euler Integration
         let {ax, ay} = Physics.calculateAcceleration(
             entity, particles
         )
@@ -82,37 +82,29 @@ export class Step {
             entity, {vx, vy}, dt
         )
 
-        // TODO: fix this
-        // let { prev_x, prev_y } = {prev_x: 0, prev_y: 0};
-
         return {ax, ay, vx, vy, x, y}
     }
 
-    static calculateVerletAVP(entity, particles, dt) {
-        let vx = entity.x - entity.prev_x;
-        let vy = entity.y - entity.prev_y;
+    static verlet(entity, particles, dt) {
+        const prev_x = entity.x - entity.vx * dt;
+        const prev_y = entity.y - entity.vy * dt;
 
-         let {ax, ay} = Physics.calculateAcceleration(
-            entity, particles
-        );
+        const { ax, ay } = Physics.calculateAcceleration(entity, particles);
 
-        let x = 2 * entity.x - entity.prev_x + ax * dt * dt;
-        let y = 2 * entity.y - entity.prev_y + ay * dt * dt;
+        const vx = entity.vx + 0.5 * (ax + entity.ax) * dt;
+        const vy = entity.vy + 0.5 * (ay + entity.ay) * dt;
 
-        let prev_x = entity.x;
-        let prev_y = entity.y;
+        const x = 2 * entity.x - prev_x + ax * dt * dt;
+        const y = 2 * entity.y - prev_y + ay * dt * dt;
 
-        return {ax, ay, vx, vy, x, y, prev_x, prev_y};
+        return { ax, ay, vx, vy, x, y, prev_x, prev_y };
     }
 
-    static calculateStep(entity, particles, dt) {
-        let { vx, vy, x, y, ax, ay, prev_x, prev_y} = Physics.calculateEulerVP(
-            entity, particles, dt
-        )
+    static calculateStep(entity, particles, dt, integrator = 'verlet') {
+        if (!Physics.integrators.includes(integrator))
+            throw reportError(new Error("select a valid integrator"));
 
-        // let {ax, ay, vx, vy, x, y, prev_x, prev_y} = Physics.calculateVerletAVP(
-        //     entity, particles, dt
-        // )
+        let { vx, vy, x, y, ax, ay, prev_x, prev_y} = Physics[integrator](entity, particles, dt)
 
         let {angle, shineAngle} = Physics.calculateAngle(entity, particles[0], dt)
 

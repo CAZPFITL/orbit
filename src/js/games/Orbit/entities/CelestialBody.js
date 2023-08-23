@@ -72,63 +72,22 @@ export default class CelestialBody extends Renderer {
         return this
     }
 
-    draw(ctx = this.app.gui.ctx, camera = this.app.gui.camera) {
-
-        if (this.id !== 'SUN') {
-            this.drawOrbit(ctx, camera);
-            this.drawTrajectory(ctx, camera);
-        }
-        this.drawName(ctx, camera);
-        this.drawImage(ctx);
-        (this.id !== 'SUN') && this.drawShadow(ctx);
-        // (!this.index) && this.drawSatellite(ctx);
-    }
-
-    updateOrbitParticles() {
-        this.orbitParticles = [];
-        let copy = this.app.game.level.particles;
-
-        for (let i = 0; i < copy.length; i++) {
-            let particle = Object.assign(Object.create(Object.getPrototypeOf(copy[i])), copy[i]);
-            this.orbitParticles.push(particle);
-        }
-    }
-
-    newOrbit() {
-        this.start = true;
-        (this.id !== 'SUN') && this.updateOrbitParticles();
-        (this.id !== 'SUN') && Physics.calculateTrajectory(this);
-        (this.id !== 'SUN') && Physics.calculateOrbit(this);
-    }
-
-    checkOrbitHalf() {
-        if (this.shineAngle > this.app.tools.degToRad(180) && this.orbitFirstHalf) {
-            this.orbitFirstHalf = false;
-            this.newOrbit();
-        }
-
-        if (this.shineAngle < this.app.tools.degToRad(180) && !this.orbitFirstHalf) {
-            this.orbitFirstHalf = true;
-            this.completedOrbits++;
-            this.newOrbit();
-        }
-    }
-
-    // console.log(this.id, '`s orbit ',  this.completedOrbits, ' completed'); // TODO: add to log
     update() {
+        this.draw();
+
         if (this.id === 'SUN') return;
 
-        (!this.start) && this.newOrbit();
-
-        this.checkOrbitHalf(this);
+        this.updateOrbit()
 
         Physics.applyGravity(
             this,
             Physics.calculateStep(
                 this,
                 this.app.game.level.particles,
-                this.app.game.level.dt
+                this.app.game.level.dt,
+                Physics.integrator
             )
         )
+
     }
 }

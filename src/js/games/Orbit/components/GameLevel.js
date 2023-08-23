@@ -35,13 +35,10 @@ export default class GameLevel {
         for (let i = 0; i < this.particles.length; i++) {
             let particle = this.particles[i];
             particle.update();
-            particle.draw();
             particle.satellites && particle.satellites.forEach(e => {
-                e.draw()
                 e.update()
             })
             particle.artificialSatellites && particle.artificialSatellites.forEach(e => {
-                e.draw()
                 e.update()
             })
         }
