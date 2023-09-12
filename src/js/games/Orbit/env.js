@@ -22,8 +22,7 @@ const CELESTIAL_BODIES = {
         x: 46001009, // km
         y: 0, // km
         vx: 0, // km/s
-        // vy: 58.98, // km/s
-        vy: 30.98, // km/s
+        vy: 58.98, // km/s
         rotationalVelocity: 10.89, // km/h
     },
     // VENUS: {

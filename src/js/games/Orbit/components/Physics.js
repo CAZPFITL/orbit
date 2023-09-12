@@ -95,8 +95,8 @@ export default class Physics extends Step {
                 const xOrbit = distance * Math.cos(trueAnomaly);
                 const yOrbit = distance * Math.sin(trueAnomaly);
 
-                const xScreen = ref.x - xOrbit;
-                const yScreen = ref.y - yOrbit;
+                const xScreen = ref.x + xOrbit;
+                const yScreen = ref.y + yOrbit;
 
                 entity.orbit.push({xScreen, yScreen});
             }
