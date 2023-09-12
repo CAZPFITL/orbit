@@ -123,10 +123,10 @@ export default class Renderer extends Orbit {
     }
 
     draw(ctx = this.app.gui.ctx, camera = this.app.gui.camera) {
-        // if (this.id !== 'SUN') {
+        if (this.id !== 'SUN') {
             this.drawOrbit(ctx, camera);
             this.drawTrajectory(ctx, camera);
-        // }
+        }
         this.drawName(ctx, camera);
         this.drawImage(ctx);
         // (this.id !== 'SUN') && this.drawShadow(ctx);
