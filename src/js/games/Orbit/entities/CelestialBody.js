@@ -4,6 +4,8 @@ import Renderer from "./Renderer.js";
 export default class CelestialBody extends Renderer {
     fx = 0;
     fy = 0;
+    prevX = 0;
+    prevY = 0;
     ax = 0;
     ay = 0;
     angle = 0;

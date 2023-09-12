@@ -4,6 +4,7 @@ export default class Orbit {
     id;
     shineAngle;
     completedOrbits;
+    trajectory;
 
     updateOrbitParticles() {
         this.orbitParticles = this.app.game.level.particles.map(particle => {
@@ -15,7 +16,7 @@ export default class Orbit {
         if (this.id !== 'SUN') {
             this.updateOrbitParticles();
             Physics.calculateTrajectory(this);
-            Physics.calculateOrbit(this);
+            // Physics.calculateOrbit(this);
         }
         this.start = true;
     }
@@ -26,19 +27,21 @@ export default class Orbit {
         if (this.shineAngle > halfAngle && this.orbitFirstHalf) {
             this.orbitFirstHalf = false;
             this.start = false;
-            this.newOrbit();
+            this.trajectory = []
         }
 
         if (this.shineAngle < halfAngle && !this.orbitFirstHalf) {
             this.orbitFirstHalf = true;
             this.completedOrbits++;
-            this.newOrbit();
+            this.trajectory = []
         }
     }
 
     updateOrbit() {
-        (!this.start) && this.newOrbit();
+        // if (!this.trajectory || this.trajectory.length === 0) {
+        //     this.newOrbit()
+        // }
 
-        this.checkOrbitHalf(this);
+        // this.checkOrbitHalf(this);
     }
 }

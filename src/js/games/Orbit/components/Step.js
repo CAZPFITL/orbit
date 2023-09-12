@@ -9,21 +9,7 @@ export class Step {
         return ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5;
     }
 
-    static calculatePosition(entity, {vx, vy}, dt) {
-        const x = entity.x + vx * dt; // km
-        const y = entity.y + vy * dt; // km
-
-        return {x, y};
-    }
-
-    static calculateVelocity(entity, {ax, ay}, dt) {
-        const vx = entity.vx + ax * dt; // km/s
-        const vy = entity.vy + ay * dt; // km/s
-
-        return {vx, vy}
-    }
-
-    static calculateAcceleration(entity, collection) {
+    static calculateAccelerationEuler(entity, collection) {
         let acceleration = {ax: 0, ay: 0};
 
         for (const body of collection) {
@@ -51,6 +37,43 @@ export class Step {
         return acceleration;
     }
 
+    static calculateAccelerationVerlet(entity, collection) {
+        let acceleration = { ax: 0, ay: 0 };
+
+        function calculateForce(entity1, entity2) {
+            const dx = entity2.x - entity1.x;
+            const dy = entity2.y - entity1.y;
+            const distanceSquared = dx * dx + dy * dy;
+            const forceMagnitude = (Physics.G_km * entity1.mass * entity2.mass) / distanceSquared;
+            const angle = Math.atan2(dy, dx);
+            const forceX = forceMagnitude * Math.cos(angle);
+            const forceY = forceMagnitude * Math.sin(angle);
+            return { x: forceX, y: forceY };
+        }
+
+
+        for (const body of collection) {
+            if (body !== entity) {
+                // Calcula las distancias entre las posiciones actuales
+                const dx = body.x - entity.x;
+                const dy = body.y - entity.y;
+
+                // Calcula la fuerza entre las entidades (esto depende de tu problema)
+                const force = calculateForce(entity, body); // Implementa esta función adecuadamente
+
+                // Calcula la aceleración como F/m, donde m es la masa de la entidad
+                const ax = force.x / entity.mass;
+                const ay = force.y / entity.mass;
+
+                // Acumula la aceleración
+                acceleration.ax += ax;
+                acceleration.ay += ay;
+            }
+        }
+
+        return acceleration;
+    }
+
     static calculateAngle(entity1, entity2, dt) {
         const dx = entity2.x - entity1.x;
         const dy = entity2.y - entity1.y;
@@ -70,17 +93,15 @@ export class Step {
 
     static euler(entity, particles, dt) {
         // Semi-implicit Euler Integration
-        let {ax, ay} = Physics.calculateAcceleration(
+        let {ax, ay} = Physics.calculateAccelerationEuler(
             entity, particles
         )
 
-        let {vx, vy} = Physics.calculateVelocity(
-            entity, {ax, ay}, dt
-        )
+        const vx = entity.vx + ax * dt; // km/s
+        const vy = entity.vy + ay * dt; // km/s
 
-        let {x, y} = Physics.calculatePosition(
-            entity, {vx, vy}, dt
-        )
+        const x = entity.x + vx * dt; // km
+        const y = entity.y + vy * dt; // km
 
         return {ax, ay, vx, vy, x, y}
     }
@@ -89,7 +110,7 @@ export class Step {
         const prev_x = entity.x - entity.vx * dt;
         const prev_y = entity.y - entity.vy * dt;
 
-        const { ax, ay } = Physics.calculateAcceleration(entity, particles);
+        const { ax, ay } = Physics.calculateAccelerationVerlet(entity, particles);
 
         const vx = entity.vx + 0.5 * (ax + entity.ax) * dt;
         const vy = entity.vy + 0.5 * (ay + entity.ay) * dt;
