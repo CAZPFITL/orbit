@@ -14,8 +14,9 @@ export default class Orbit {
 
     newOrbit() {
         if (this.id !== 'SUN') {
-            this.updateOrbitParticles();
-            Physics.calculateTrajectory(this);
+            // const thisCopy = Object.assign(Object.create(Object.getPrototypeOf(this)), this)
+            // this.updateOrbitParticles();
+            // Physics.calculateTrajectory(thisCopy);
             // Physics.calculateOrbit(this);
         }
         this.start = true;
@@ -38,10 +39,6 @@ export default class Orbit {
     }
 
     updateOrbit() {
-        // if (!this.trajectory || this.trajectory.length === 0) {
-        //     this.newOrbit()
-        // }
-
         // this.checkOrbitHalf(this);
     }
 }

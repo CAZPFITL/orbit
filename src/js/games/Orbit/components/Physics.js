@@ -9,9 +9,27 @@ export default class Physics extends Step {
     static universalDistanceScale = 1;
 
     static calculateTrajectory(entity) {
-        entity.trajectory = [];
-        let ref
+        const copy = Object.assign(Object.create(Object.getPrototypeOf(entity)), entity)
+
+        copy.trajectory = [];
+
+        copy.updateOrbitParticles();
+
+        for (let step = 0; step < 360; step++) {
+
+            // console.log(Physics.calculateAccelerationVerlet(entity, entity.orbitParticles))
+            // const newState = Physics.calculateStep(copy, copy.orbitParticles, copy.app.game.level.dt, 'verlet');
+
+
+            // // Agrega el estado actual al arreglo de trayectoria
+            // entity.trajectory.push({
+            //     x: newState.x,
+            //     y: newState.y,
+            //     // Agrega otras propiedades que desees rastrear en la trayectoria
+            // });
+        }
     }
+
     // static calculateTrajectory(entity) {
     //     entity.trajectory = [];
     //     let ref

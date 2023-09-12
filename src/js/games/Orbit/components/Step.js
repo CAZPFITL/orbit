@@ -57,10 +57,12 @@ export class Step {
                 const dx = body.x - entity.x;
                 const dy = body.y - entity.y;
 
-                const force = calculateForce(entity, body); // Implementa esta función adecuadamente
+                const force = calculateForce(entity, body);
 
                 const ax = force.x / entity.mass;
                 const ay = force.y / entity.mass;
+
+                // console.log(ax)
 
                 acceleration.ax += ax;
                 acceleration.ay += ay;
@@ -108,6 +110,7 @@ export class Step {
 
         const { ax, ay } = Physics.calculateAccelerationVerlet(entity, particles);
 
+
         const vx = entity.vx + 0.5 * (ax + entity.ax) * dt;
         const vy = entity.vy + 0.5 * (ay + entity.ay) * dt;
 
@@ -123,9 +126,12 @@ export class Step {
 
         let { vx, vy, x, y, ax, ay, prev_x, prev_y} = Physics[integrator](entity, particles, dt)
 
+
+
         let {angle, shineAngle} = Physics.calculateAngle(entity, particles[0], dt)
 
         let distanceToSun = Physics.calculateDistanceToSun(entity, particles[0])
+
 
         return {ax, ay, vx, vy, x, y, angle, shineAngle, distanceToSun, prev_x, prev_y}
     }

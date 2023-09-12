@@ -79,7 +79,11 @@ export default class CelestialBody extends Renderer {
 
         if (this.id === 'SUN') return;
 
-        this.updateOrbit()
+        if (!this.trajectory || this.trajectory.length === 0) {
+            // this.newOrbit()
+            Physics.calculateTrajectory(this)
+            // console.log()
+        }
 
         Physics.applyGravity(
             this,
