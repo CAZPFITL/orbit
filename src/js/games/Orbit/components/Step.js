@@ -54,18 +54,14 @@ export class Step {
 
         for (const body of collection) {
             if (body !== entity) {
-                // Calcula las distancias entre las posiciones actuales
                 const dx = body.x - entity.x;
                 const dy = body.y - entity.y;
 
-                // Calcula la fuerza entre las entidades (esto depende de tu problema)
                 const force = calculateForce(entity, body); // Implementa esta función adecuadamente
 
-                // Calcula la aceleración como F/m, donde m es la masa de la entidad
                 const ax = force.x / entity.mass;
                 const ay = force.y / entity.mass;
 
-                // Acumula la aceleración
                 acceleration.ax += ax;
                 acceleration.ay += ay;
             }
