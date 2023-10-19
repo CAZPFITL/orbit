@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Orbital Simulation</title>
+</head>
+<body>
+<canvas id="canvas" width="1200" height="900" style="background: #000000;"></canvas>
+<script>
+    const canvas = document.getElementById("canvas");
+    const context = canvas.getContext("2d");
+
+    const G = 1;  // Gravitational constant
+    const timeStep = 0.001;
+    const numSteps = 1000;
+    const sunMass = 10000;
+    const mercuryMass = 1;
+
+    let sun = {
+        x: canvas.width / 2,
+        y: canvas.height / 2,
+        radius: 10,
+        color: 'yellow',
+        vx: 0,
+        vy: 0
+    };
+
+    let mercury = {
+        x: canvas.width / 2 + 500,
+        radius: 4,
+        y: canvas.height / 2,
+        color: 'gray',
+        vx: 0,
+        vy: -2
+    };
+
+    function updatePosition(body) {
+        body.x += body.vx * timeStep;
+        body.y += body.vy * timeStep;
+    }
+
+    function leapfrogUpdate(body) {
+        let dx = body.x - sun.x;
+        let dy = body.y - sun.y;
+        let r = Math.sqrt(dx ** 2 + dy ** 2);
+
+        let ax = -(G * sunMass * dx) / (r ** 3);
+        let ay = -(G * sunMass * dy) / (r ** 3);
+
+        body.ax = ax;
+        body.ay = ay;
+
+        // Actualizar la posición usando el método Leapfrog
+        body.x += body.vx * timeStep + 0.5 * body.ax * (timeStep ** 2);
+        body.y += body.vy * timeStep + 0.5 * body.ay * (timeStep ** 2);
+
+        // Actualizar la velocidad utilizando la aceleración actualizada
+        body.vx += body.ax * timeStep;
+        body.vy += body.ay * timeStep;
+
+    }
+
+    function drawBody(body) {
+        context.beginPath();
+        context.arc(body.x, body.y, body.radius, 0, Math.PI * 2);
+        context.fillStyle = body.color;
+        context.fill();
+        context.closePath();
+    }
+
+    function animate() {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
+        for (let i = 0; i < numSteps; i++) {
+            // Actualiza la posición y velocidad utilizando Leapfrog
+            leapfrogUpdate(mercury);
+        }
+
+        updatePosition(sun);
+
+        drawBody(sun);
+        drawBody(mercury);
+
+        requestAnimationFrame(animate);
+    }
+
+    animate();
+</script>
+</body>
+</html>

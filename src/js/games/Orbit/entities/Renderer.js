@@ -1,6 +1,7 @@
 import Physics from "../components/Physics.js";
+import Orbit from "./Orbit.js";
 
-export default class Renderer {
+export default class Renderer extends Orbit {
     id;
     x;
     y;
@@ -16,10 +17,10 @@ export default class Renderer {
     trajectory;
     semiMajorAxis;
     eccentricity;
-    periapsis;
-    apoapsis;
+    orbit;
 
     constructor(){
+        super();
         this.img = new Image();
         this.shadow = new Image();
         this.img.src = './src/js/games/Orbit/assets/planets4.png';
@@ -93,7 +94,7 @@ export default class Renderer {
         this.trajectory && this.app.gui.get.path({
             ctx,
             collection: this.trajectory,
-            color: 'rgba(255,0,255,0.59)',
+            color: 'rgba(153,255,0,0.39)',
             width: camera.zoom / 1000,
             lineCap: 'round',
             scale: 1
@@ -105,75 +106,30 @@ export default class Renderer {
         ctx.beginPath();
         ctx.fillStyle = 'rgba(0,226,255,0.7)';
         ctx.strokeStyle = 'rgba(0,226,255,0.7)';
-        ctx.lineWidth = camera.zoom / 2000;
+        ctx.lineWidth = camera.zoom / 1000;
 
-        const centerX = 0; // Usar el centro proporcionado
-        const centerY = 0;
-
-        const semiMajorAxis = this.semiMajorAxis; // Semieje mayor de la órbita
-        const eccentricity = this.eccentricity;
-        for (let angle = 0; angle <= 360; angle++) {
-            const trueAnomaly = angle * (Math.PI / 180);
-
-            const distance = (semiMajorAxis * (1 - Math.pow(eccentricity, 2))) / (1 + eccentricity * Math.cos(trueAnomaly));
-
-            const xOrbit = distance * Math.cos(trueAnomaly);
-            const yOrbit = distance * Math.sin(trueAnomaly);
-
-            const xScreen = centerX + xOrbit;
-            const yScreen = centerY - yOrbit;
-
-            if (angle === 0) {
-                ctx.moveTo(xScreen, yScreen);
+        for (let i = 0; i < this.orbit.length; i++) {
+            const step = this.orbit[i]
+            if (i === 0) {
+                ctx.moveTo(step.xScreen, step.yScreen);
             } else {
-                ctx.lineTo(xScreen, yScreen);
+                ctx.lineTo(step.xScreen, step.yScreen);
             }
         }
 
         ctx.closePath();
         ctx.stroke();
         ctx.restore();
-
     }
 
-    drawQq(ctx, camera) {
-        ctx.save();
-        ctx.beginPath();
-        ctx.lineWidth = 1;
-
-        const centerX = 0; // Usar el centro proporcionado
-        const centerY = 0;
-
-        const semiMajorAxis = this.semiMajorAxis; // Semieje mayor de la órbita
-        const eccentricity = this.eccentricity;
-        for (let angle = 0; angle <= 360; angle++) {
-            const trueAnomaly = angle * (Math.PI / 180);
-
-            const distance = (semiMajorAxis * (1 - Math.pow(eccentricity, 2))) / (1 + eccentricity * Math.cos(trueAnomaly));
-
-            const xOrbit = distance * Math.cos(trueAnomaly);
-            const yOrbit = distance * Math.sin(trueAnomaly);
-
-            const xScreen = centerX + xOrbit;
-            const yScreen = centerY - yOrbit;
-
-            if (angle === 0) {
-                ctx.moveTo(xScreen, yScreen);
-            } else {
-                ctx.lineTo(xScreen, yScreen);
-            }
-
-            if (Math.abs(distance - this.periapsis) < 0.001 || Math.abs(distance - this.apoapsis) < 0.001) {
-                ctx.beginPath();
-                ctx.arc(xScreen, yScreen, 200000, 0, 2 * Math.PI);
-                ctx.fillStyle = Math.abs(distance - this.periapsis) < 0.001 ? '#00ff22' : '#ff0000';
-                ctx.fill();
-            }
+    draw(ctx = this.app.gui.ctx, camera = this.app.gui.camera) {
+        if (this.id !== 'SUN') {
+            this.drawOrbit(ctx, camera);
+            this.drawTrajectory(ctx, camera);
         }
-
-        ctx.closePath();
-        ctx.stroke();
-        ctx.restore();
-
+        this.drawName(ctx, camera);
+        this.drawImage(ctx);
+        // (this.id !== 'SUN') && this.drawShadow(ctx);
+        // (!this.index) && this.drawSatellite(ctx);
     }
 }

@@ -1,4 +1,5 @@
 export default class Animation {
+    request = 0;
     constructor(app) {
         this.app = app;
         app.animation = this;
@@ -12,7 +13,7 @@ export default class Animation {
 
     loop = () => {
         this.app.gui.camera.begin();
-        this.app.looper.forEach(({update}) => update && update(this?.request ?? 0))
+        this.app.looper.forEach(({update}) => update && update(this.request))
         this.app.gui.camera.end();
         this.request = requestAnimationFrame(this.loop);
     }
